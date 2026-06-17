@@ -25,6 +25,9 @@ class FontPickerViewModel(
 
     private val _appliedOption = MutableStateFlow<FontOption?>(null)
 
+    private val _showApplyDialog = MutableStateFlow(false)
+    val showApplyDialog: StateFlow<Boolean> = _showApplyDialog.asStateFlow()
+
     private val _applyEvent = Channel<Unit>(Channel.BUFFERED)
     val applyEvent = _applyEvent.receiveAsFlow()
 
@@ -36,13 +39,7 @@ class FontPickerViewModel(
     val onApply: Flow<(suspend () -> Unit)?> = isApplyVisible.map { visible ->
         if (visible) {
             suspend {
-                val option = _selectedOption.value
-                if (option != null) {
-                    fontManager.apply(option, null)
-                    _appliedOption.value = option
-                    _activeOption.value = option
-                    _applyEvent.trySend(Unit)
-                }
+                _showApplyDialog.value = true
             }
         } else null
     }
@@ -59,6 +56,24 @@ class FontPickerViewModel(
 
     fun selectFont(option: FontOption) {
         _selectedOption.value = option
+    }
+
+    fun confirmApply() {
+        viewModelScope.launch {
+            _showApplyDialog.value = false
+            val option = _selectedOption.value
+            if (option != null) {
+                fontManager.apply(option, null)
+                _appliedOption.value = option
+                _activeOption.value = option
+                _applyEvent.trySend(Unit)
+            }
+        }
+    }
+
+    fun cancelApply() {
+        _showApplyDialog.value = false
+        _selectedOption.value = _activeOption.value
     }
 
     class Factory @Inject constructor(

@@ -846,7 +846,7 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
                                 R.string.clock_style_update_toast,
                                 clockStyle,
                             )
-                        Snackbar.make(rootView, toastMessage, Snackbar.LENGTH_SHORT).show()
+                        Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
                     }
                 }
             }

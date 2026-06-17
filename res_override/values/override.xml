@@ -18,7 +18,7 @@
 <resources>
     <!-- Package of the stub apk containing the themes descriptions -->
     <string name="themes_stub_package" translatable="false">
-        com.yaap.colorstub
+        com.mosaicos.colors
     </string>
 
     <!-- Package of the stub apk containing the clock content -->

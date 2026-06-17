@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.customization.model.font.FontOption
 import com.android.customization.picker.font.ui.viewmodel.FontPickerViewModel
+import com.android.themepicker.R
 
 @Composable
 fun FontSectionScreen(
@@ -32,6 +34,7 @@ fun FontSectionScreen(
 ) {
     val options by viewModel.fontOptions.collectAsState()
     val selectedOption by viewModel.selectedOption.collectAsState()
+	val showDialog by viewModel.showApplyDialog.collectAsState()
     val context = LocalContext.current
 
     val colorScheme = remember(isDark) {
@@ -43,6 +46,28 @@ fun FontSectionScreen(
     }
 
     MaterialTheme(colorScheme = colorScheme) {
+		if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { viewModel.cancelApply() },
+                title = { Text(text = stringResource(R.string.restart_system_title)) },
+                text = { Text(text = stringResource(R.string.restart_system)) },
+                confirmButton = {
+                    Button(
+                        onClick = { viewModel.confirmApply() }
+                    ) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { viewModel.cancelApply() }
+                    ) {
+                        Text(text = stringResource(R.string.cancel))
+                    }
+                }
+            )
+        }
+	
         Column(
             modifier = modifier
                 .fillMaxWidth()

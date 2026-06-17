@@ -113,7 +113,7 @@ java_defaults {
 
     required: [
         "android.software.theme_picker.xml",
-        "YAAPColorStub",
+        "MosaicOSColors",
     ],
 
     use_embedded_native_libs: true,
@@ -137,7 +137,7 @@ java_defaults {
 }
 
 android_app {
-    name: "YAAPColorStub",
+    name: "MosaicOSColors",
     manifest: "AndroidManifest-Stub.xml",
     resource_dirs: ["res-stub"],
 
