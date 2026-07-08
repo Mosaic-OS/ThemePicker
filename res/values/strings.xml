@@ -741,4 +741,8 @@
     -->
     <string name="disabled_slider_state_description_template">disabled, %1$d, range from %2$d to %3$d</string>
 
+
+    <!-- Font apply system restart -->
+    <string name="restart_system_title">Restart System UI</string>
+    <string name="restart_system">A SystemUI restart is required to change the font. This may close background applications.</string>
 </resources>

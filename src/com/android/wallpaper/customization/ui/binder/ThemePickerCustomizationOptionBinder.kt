@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintSet
@@ -47,6 +48,7 @@ import com.android.customization.picker.color.ui.binder.ColorsFloatingSheetBinde
 import com.android.customization.picker.color.ui.compose.ColorFloatingSheet
 import com.android.customization.picker.color.ui.view.ColorOptionIconView
 import com.android.customization.picker.color.ui.viewmodel.ColorOptionIconViewModel
+import com.android.customization.picker.font.ui.view.FontSectionScreen
 import com.android.customization.picker.grid.ui.binder.GridFloatingSheetBinder
 import com.android.customization.picker.icon.ui.binder.AppIconFloatingSheetBinder
 import com.android.customization.picker.icon.ui.binder.ShapeIconViewBinder
@@ -59,6 +61,7 @@ import com.android.themepicker.R
 import com.android.wallpaper.config.BaseFlags
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerHomeCustomizationOption
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption
+import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption.FONT
 import com.android.wallpaper.customization.ui.viewmodel.ThemePickerCustomizationOptionsData
 import com.android.wallpaper.customization.ui.viewmodel.ThemePickerCustomizationOptionsViewModel
 import com.android.wallpaper.picker.common.icon.ui.viewbinder.IconViewBinder
@@ -74,7 +77,6 @@ import com.android.wallpaper.picker.customization.ui.viewmodel.CustomizationOpti
 import com.android.wallpaper.picker.customization.ui.viewmodel.CustomizationPickerViewModel2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineName
@@ -186,11 +188,14 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
             )
         }
 
-        val optionClock: View =
+        val fontOptionEntries =
+            allCustomizationOptionEntries.filter { it.first == FONT }.map { it.second }
+
+        val optionClock: View? =
             lockScreenCustomizationOptionEntries
-                .first { it.first == ThemePickerLockCustomizationOption.CLOCK }
-                .second
-        val optionClockIcon: ImageView = optionClock.requireViewById(R.id.option_entry_icon)
+                .find { it.first == ThemePickerLockCustomizationOption.CLOCK }
+                ?.second
+        val optionClockIcon: ImageView? = optionClock?.findViewById(R.id.option_entry_icon)
 
         val isKeyguardQuickAffordanceEnabled =
             BaseFlags.get(view.context).isKeyguardQuickAffordanceEnabled(view.context)
@@ -201,27 +206,27 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
         if (isKeyguardQuickAffordanceEnabled) {
             optionShortcut =
                 lockScreenCustomizationOptionEntries
-                    .first { it.first == ThemePickerLockCustomizationOption.SHORTCUTS }
-                    .second
+                    .find { it.first == ThemePickerLockCustomizationOption.SHORTCUTS }
+                    ?.second
             optionShortcutDescription =
-                optionShortcut.requireViewById(R.id.option_entry_description)
-            optionShortcutIcon1 = optionShortcut.requireViewById(R.id.option_entry_icon_1)
-            optionShortcutIcon2 = optionShortcut.requireViewById(R.id.option_entry_icon_2)
+                optionShortcut?.findViewById(R.id.option_entry_description)
+            optionShortcutIcon1 = optionShortcut?.findViewById(R.id.option_entry_icon_1)
+            optionShortcutIcon2 = optionShortcut?.findViewById(R.id.option_entry_icon_2)
         }
 
-        val optionLockScreenNotificationsSettings: View =
+        val optionLockScreenNotificationsSettings: View? =
             lockScreenCustomizationOptionEntries
-                .first { it.first == ThemePickerLockCustomizationOption.LOCK_SCREEN_NOTIFICATIONS }
-                .second
-        optionLockScreenNotificationsSettings.setOnClickListener {
+                .find { it.first == ThemePickerLockCustomizationOption.LOCK_SCREEN_NOTIFICATIONS }
+                ?.second
+        optionLockScreenNotificationsSettings?.setOnClickListener {
             navigateToLockScreenNotificationsSettingsActivity.invoke()
         }
 
-        val optionMoreLockScreenSettings: View =
+        val optionMoreLockScreenSettings: View? =
             lockScreenCustomizationOptionEntries
-                .first { it.first == ThemePickerLockCustomizationOption.MORE_LOCK_SCREEN_SETTINGS }
-                .second
-        optionMoreLockScreenSettings.setOnClickListener {
+                .find { it.first == ThemePickerLockCustomizationOption.MORE_LOCK_SCREEN_SETTINGS }
+                ?.second
+        optionMoreLockScreenSettings?.setOnClickListener {
             navigateToMoreLockScreenSettingsActivity.invoke()
         }
 
@@ -234,27 +239,27 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
         if (BaseFlags.get(view.context).isPackThemeEnabled() && showPackEntry) {
             optionPackThemeHome =
                 homeScreenCustomizationOptionEntries
-                    .first { it.first == ThemePickerHomeCustomizationOption.PACK_THEME }
-                    .second
+                    .find { it.first == ThemePickerHomeCustomizationOption.PACK_THEME }
+                    ?.second
             optionPackThemeIconHomeDefault =
-                optionPackThemeHome.requireViewById(R.id.option_entry_icon_default)
-            optionPackThemeIconHome = optionPackThemeHome.requireViewById(R.id.option_entry_icon)
+                optionPackThemeHome?.findViewById(R.id.option_entry_icon_default)
+            optionPackThemeIconHome = optionPackThemeHome?.findViewById(R.id.option_entry_icon)
 
             optionPackThemeLock =
                 lockScreenCustomizationOptionEntries
-                    .first { it.first == ThemePickerHomeCustomizationOption.PACK_THEME }
-                    .second
+                    .find { it.first == ThemePickerHomeCustomizationOption.PACK_THEME }
+                    ?.second
             optionPackThemeIconLockDefault =
-                optionPackThemeLock.requireViewById(R.id.option_entry_icon_default)
-            optionPackThemeIconLock = optionPackThemeLock.requireViewById(R.id.option_entry_icon)
+                optionPackThemeLock?.findViewById(R.id.option_entry_icon_default)
+            optionPackThemeIconLock = optionPackThemeLock?.findViewById(R.id.option_entry_icon)
         }
 
         if (BaseFlags.get(view.context).shouldShowDesktopUi(view.context)) {
-            val optionScreenSaverEntry: View =
+            val optionScreenSaverEntry: View? =
                 homeScreenCustomizationOptionEntries
-                    .first { it.first == ThemePickerHomeCustomizationOption.SCREEN_SAVER }
-                    .second
-            optionScreenSaverEntry.setOnClickListener {
+                    .find { it.first == ThemePickerHomeCustomizationOption.SCREEN_SAVER }
+                    ?.second
+            optionScreenSaverEntry?.setOnClickListener {
                 navigateToScreenSaverSettingsActivity.invoke()
             }
         }
@@ -262,21 +267,21 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
         val optionColors: View? =
             if (customizationOptionsData.isColorCustomizationAvailable) {
                 homeScreenCustomizationOptionEntries
-                    .first { it.first == ThemePickerHomeCustomizationOption.COLORS }
-                    .second
+                    .find { it.first == ThemePickerHomeCustomizationOption.COLORS }
+                    ?.second
             } else null
         val optionColorsIcon: ColorOptionIconView? =
-            optionColors?.requireViewById(R.id.option_entry_icon)
+            optionColors?.findViewById(R.id.option_entry_icon)
 
         val optionAppIcons: View? =
             if (customizationOptionsData.isIconCustomizationAvailable) {
                 homeScreenCustomizationOptionEntries
-                    .first { it.first == ThemePickerHomeCustomizationOption.APP_ICONS }
-                    .second
+                    .find { it.first == ThemePickerHomeCustomizationOption.APP_ICONS }
+                    ?.second
             } else null
         val optionAppIconsDescription: TextView? =
-            optionAppIcons?.requireViewById(R.id.option_entry_description)
-        val optionAppIconsIcon: ImageView? = optionAppIcons?.requireViewById(R.id.option_entry_icon)
+            optionAppIcons?.findViewById(R.id.option_entry_description)
+        val optionAppIconsIcon: ImageView? = optionAppIcons?.findViewById(R.id.option_entry_icon)
 
         var optionGrid: View? = null
         var optionGridDescription: TextView? = null
@@ -284,23 +289,28 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
         if (customizationOptionsData.isGridCustomizationAvailable) {
             optionGrid =
                 homeScreenCustomizationOptionEntries
-                    .first { it.first == ThemePickerHomeCustomizationOption.GRID }
-                    .second
-            optionGridDescription = optionGrid.requireViewById(R.id.option_entry_description)
-            optionGridIcon = optionGrid.requireViewById(R.id.option_entry_icon)
+                    .find { it.first == ThemePickerHomeCustomizationOption.GRID }
+                    ?.second
+            optionGridDescription = optionGrid?.findViewById(R.id.option_entry_description)
+            optionGridIcon = optionGrid?.findViewById(R.id.option_entry_icon)
         }
 
-        val optionColorContrast: View =
+        val optionColorContrast: View? =
             homeScreenCustomizationOptionEntries
-                .first { it.first == ThemePickerHomeCustomizationOption.COLOR_CONTRAST }
-                .second
-        optionColorContrast.setOnClickListener { navigateToColorContrastSettingsActivity.invoke() }
+                .find { it.first == ThemePickerHomeCustomizationOption.COLOR_CONTRAST }
+                ?.second
+        optionColorContrast?.setOnClickListener {
+            navigateToColorContrastSettingsActivity.invoke()
+        }
         val backgroundScope =
             CoroutineScope(Dispatchers.IO + Job() + CoroutineName(BACKGROUND_CONTEXT))
 
         ColorUpdateBinder.bind(
             setColor = { color ->
-                optionClockIcon.setColorFilter(color)
+                optionClockIcon?.setColorFilter(color)
+                fontOptionEntries.forEach {
+                    it.findViewById<ImageView>(R.id.option_entry_icon)?.setColorFilter(color)
+                }
                 if (isKeyguardQuickAffordanceEnabled) {
                     optionShortcutIcon1?.setColorFilter(color)
                     optionShortcutIcon2?.setColorFilter(color)
@@ -322,13 +332,30 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     optionsViewModel.onCustomizeClockClicked.collect {
-                        optionClock.setOnClickListener { _ -> it?.invoke() }
+                        optionClock?.setOnClickListener { _ -> it?.invoke() }
                     }
                 }
 
                 launch {
                     optionsViewModel.clockPickerViewModel.selectedClock.collect {
-                        optionClockIcon.setImageDrawable(it.thumbnail)
+                        optionClockIcon?.setImageDrawable(it.thumbnail)
+                    }
+                }
+
+                launch {
+                    optionsViewModel.onCustomizeFontsClicked.collect { clickAction ->
+                        fontOptionEntries.forEach { entryView ->
+                            entryView.setOnClickListener { _ -> clickAction?.invoke() }
+                        }
+                    }
+                }
+
+                launch {
+                    optionsViewModel.fontPickerViewModel.activeOption.collect { option ->
+                        fontOptionEntries.forEach { entryView ->
+                            entryView.findViewById<TextView>(R.id.option_entry_description)?.text =
+                                option?.title
+                        }
                     }
                 }
 
@@ -463,14 +490,16 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
                     optionsViewModel.colorContrastSectionViewModel.contrast.collectLatest { contrast
                         ->
                         binding?.destroy()
-                        binding =
-                            ColorContrastSectionViewBinder2.bind(
-                                view = optionColorContrast,
-                                contrast = contrast,
-                                colorUpdateViewModel = colorUpdateViewModel,
-                                shouldAnimateColor = isOnMainScreen,
-                                lifecycleOwner = lifecycleOwner,
-                            )
+                        optionColorContrast?.let {
+                            binding =
+                                ColorContrastSectionViewBinder2.bind(
+                                    view = it,
+                                    contrast = contrast,
+                                    colorUpdateViewModel = colorUpdateViewModel,
+                                    shouldAnimateColor = isOnMainScreen,
+                                    lifecycleOwner = lifecycleOwner,
+                                )
+                        }
                     }
                 }
 
@@ -744,6 +773,24 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
                 )
             }
 
+        customizationOptionFloatingSheetViewMap
+            ?.get(FONT)
+            ?.let { sheetView ->
+                (sheetView as ComposeView).apply {
+                    // Make sure Composable lifecycle aligns with fragment lifecycle
+                    setViewCompositionStrategy(
+                        ViewCompositionStrategy.DisposeOnLifecycleDestroyed(lifecycleOwner)
+                    )
+                    setContent {
+                        val isDark = isSystemInDarkTheme()
+                        FontSectionScreen(
+                            viewModel = optionsViewModel.fontPickerViewModel,
+                            isDark = isDark,
+                        )
+                    }
+                }
+            }
+
         customizationOptionFloatingSheetViewMap?.get(ThemePickerHomeCustomizationOption.GRID)?.let {
             GridFloatingSheetBinder.bind(
                 it,
@@ -891,7 +938,10 @@ constructor(private val defaultCustomizationOptionsBinder: DefaultCustomizationO
                                 R.string.clock_style_update_toast,
                                 clockStyle,
                             )
-                        Snackbar.make(rootView, toastMessage, Snackbar.LENGTH_SHORT).show()
+                        // Use a Toast instead of a Material Snackbar: the picker's theme cannot
+                        // resolve the attributes Snackbar's layout needs (inflating it throws
+                        // InflateException on ?android:textColorLink).
+                        Toast.makeText(rootView.context, toastMessage, Toast.LENGTH_SHORT).show()
                     }
                 }
             }

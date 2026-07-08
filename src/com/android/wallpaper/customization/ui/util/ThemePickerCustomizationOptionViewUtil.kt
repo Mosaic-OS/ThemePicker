@@ -17,6 +17,7 @@
 package com.android.wallpaper.customization.ui.util
 
 import android.content.Context
+import android.os.UserManager
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +36,7 @@ import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptio
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerHomeCustomizationOption.PACK_THEME
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerHomeCustomizationOption.SCREEN_SAVER
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption.CLOCK
+import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption.FONT
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption.LOCK_SCREEN_NOTIFICATIONS
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption.MORE_LOCK_SCREEN_SETTINGS
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption.SHORTCUTS
@@ -105,6 +107,16 @@ constructor(
                                 false,
                             )
                     )
+                    if (isOwner()) {
+                        add(
+                            FONT to
+                                layoutInflater.inflate(
+                                    R.layout.customization_option_entry_font,
+                                    optionContainer,
+                                    false,
+                                )
+                        )
+                    }
                     if (isKeyguardQuickAffordanceEnabled) {
                         add(
                             SHORTCUTS to
@@ -173,6 +185,16 @@ constructor(
                                 false,
                             )
                     )
+                    if (isOwner()) {
+                        add(
+                            FONT to
+                                layoutInflater.inflate(
+                                    R.layout.customization_option_entry_font,
+                                    optionContainer,
+                                    false,
+                                )
+                        )
+                    }
                     if (
                         customizationOptionsData.isIconStyleAvailable ||
                             customizationOptionsData.isShapeAvailable
@@ -219,6 +241,7 @@ constructor(
             BaseFlags.get(context).isKeyguardQuickAffordanceEnabled(bottomSheetContainer.context)
         return buildMap {
             putAll(map)
+            put(FONT, ComposeView(context).also { bottomSheetContainer.addView(it) })
             put(
                 CLOCK,
                 inflateFloatingSheet(CLOCK, bottomSheetContainer, layoutInflater).also {
@@ -292,4 +315,9 @@ constructor(
                     "Customization option $option does not have a bottom sheet view"
                 )
         }.let { layoutInflater.inflate(it, bottomSheetContainer, false) }
+
+    private fun isOwner(): Boolean {
+        val userManager = context.getSystemService(Context.USER_SERVICE) as UserManager
+        return userManager.isSystemUser
+    }
 }

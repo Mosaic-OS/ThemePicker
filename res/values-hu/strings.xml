@@ -190,4 +190,6 @@
     <string name="clock_face_width" msgid="5818129719338363570">"Óralap szélessége"</string>
     <string name="enabled_slider_state_description_template" msgid="110185389957126478">"%1$d, a tartomány %2$d és %3$d között van"</string>
     <string name="disabled_slider_state_description_template" msgid="660230299054431711">"letiltva, %1$d, a tartomány %2$d és %3$d között van"</string>
+    <string name="restart_system_title">Rendszerfelület újraindítása</string>
+    <string name="restart_system">A betűtípus váltásához újra kell indítani a rendszerfelületet. A háttérben lévő alkalmazások bezárulhatnak.</string>
 </resources>

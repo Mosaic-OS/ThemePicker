@@ -21,6 +21,7 @@ import android.view.accessibility.AccessibilityManager
 import com.android.customization.packtheme.ui.viewmodel.PackThemeViewModel
 import com.android.customization.picker.clock.ui.viewmodel.ClockPickerViewModel
 import com.android.customization.picker.color.ui.viewmodel.ColorPickerViewModel
+import com.android.customization.picker.font.ui.viewmodel.FontPickerViewModel
 import com.android.customization.picker.grid.ui.viewmodel.GridPickerViewModel
 import com.android.customization.picker.icon.ui.viewmodel.AppIconPickerViewModel
 import com.android.customization.picker.mode.ui.viewmodel.DarkModeViewModel
@@ -32,6 +33,7 @@ import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptio
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerHomeCustomizationOption.COLORS
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerHomeCustomizationOption.GRID
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption.CLOCK
+import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption.FONT
 import com.android.wallpaper.customization.ui.util.ThemePickerCustomizationOptionUtil.ThemePickerLockCustomizationOption.SHORTCUTS
 import com.android.wallpaper.picker.common.preview.ui.viewmodel.WorkspacePreviewScreen
 import com.android.wallpaper.picker.customization.ui.view.ApplyButton
@@ -76,6 +78,7 @@ constructor(
     clockPickerViewModelFactory: ClockPickerViewModel.Factory,
     gridPickerViewModelFactory: GridPickerViewModel.Factory,
     appIconPickerViewModelFactory: AppIconPickerViewModel.Factory,
+    fontPickerViewModelFactory: FontPickerViewModel.Factory,
     val colorContrastSectionViewModel: ColorContrastSectionViewModel2,
     val darkModeViewModel: DarkModeViewModel,
     val packThemeViewModel: PackThemeViewModel,
@@ -104,6 +107,7 @@ constructor(
     val gridPickerViewModel = gridPickerViewModelFactory.create(viewModelScope = viewModelScope)
     val appIconPickerViewModel =
         appIconPickerViewModelFactory.create(viewModelScope = viewModelScope)
+    val fontPickerViewModel = fontPickerViewModelFactory.create(viewModelScope = viewModelScope)
 
     override val customizationOptionsData: Flow<CustomizationOptionsData> =
         if (BaseFlags.get(appContext).isExtendibleThemeManager()) {
@@ -229,6 +233,15 @@ constructor(
             }
         }
 
+    val onCustomizeFontsClicked: Flow<(() -> Unit)?> =
+        selectedOption.map {
+            if (it == null) {
+                { defaultCustomizationOptionsViewModel.selectOption(FONT) }
+            } else {
+                null
+            }
+        }
+
     val onCustomizeShortcutClicked: Flow<(() -> Unit)?> =
         selectedOption.map {
             if (it == null) {
@@ -273,6 +286,7 @@ constructor(
                     CLOCK -> clockPickerViewModel.onApply
                     SHORTCUTS -> keyguardQuickAffordancePickerViewModel2.onApply
                     GRID -> gridPickerViewModel.onApply
+                    FONT -> fontPickerViewModel.onApply
                     APP_ICONS ->
                         if (BaseFlags.get(appContext).isExtendibleThemeManager()) {
                             appIconPickerViewModel.iconStyleAndShapeOnApply
