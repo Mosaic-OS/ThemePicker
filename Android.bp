@@ -111,7 +111,10 @@ java_defaults {
         "librenderscript-toolkit",
     ],
 
-    required: ["android.software.theme_picker.xml"],
+    required: [
+        "android.software.theme_picker.xml",
+        "MosaicOSColors",
+    ],
 
     use_embedded_native_libs: true,
 
@@ -156,4 +159,14 @@ android_app {
         "WallpaperPicker2",
     ],
     static_libs: ["ThemePickerApplicationLib"],
+}
+
+android_app {
+    name: "MosaicOSColors",
+    manifest: "AndroidManifest-Stub.xml",
+    resource_dirs: ["res-stub"],
+
+    certificate: "platform",
+    product_specific: true,
+    sdk_version: "current",
 }
