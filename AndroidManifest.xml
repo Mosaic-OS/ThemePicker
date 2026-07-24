@@ -30,7 +30,7 @@
         <package android:name="com.android.settings"/>
         <package android:name="com.android.systemui"/>
         <!-- Package of camera for icon shape -->
-        <package android:name="app.grapheneos.camera" />
+        <package android:name="app.mosaicos.camera" />
 
         <!-- Specific intents Wallpaper picker query for -->
         <!-- Package for theme stub -->
